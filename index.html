@@ -12,6 +12,7 @@
       text-align: center;
       margin: 0;
       padding: 20px;
+      overflow-x: hidden;
     }
 
     h1 {
@@ -19,24 +20,30 @@
     }
 
     .board {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin-top: 20px;
+      position: relative;
+      width: 100%;
+      max-width: 430px;
+      height: 520px;
+      margin: 25px auto 0;
+      border-radius: 18px;
+      background: #0f172a;
+      overflow: hidden;
+      border: 2px solid #1e293b;
     }
 
     button.number {
-      padding: 18px 0;
-      font-size: 22px;
+      position: absolute;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       background: #1f2937;
       color: white;
       cursor: pointer;
+      font-weight: bold;
+      transition: 0.15s;
     }
 
     button.number:active {
-      transform: scale(0.95);
+      transform: scale(0.9);
     }
 
     .main-btn {
@@ -85,6 +92,7 @@
   <script>
     let selectedNumber = null;
     let currentNumbers = [];
+    let numberLayout = [];
 
     const chooseScreen = document.getElementById("chooseScreen");
     const gameScreen = document.getElementById("gameScreen");
@@ -97,12 +105,8 @@
       return array.sort(() => Math.random() - 0.5);
     }
 
-    function generateNumbers(amount = 25, mustInclude = null) {
+    function generateNumbers(amount = 25) {
       const numbers = [];
-
-      if (mustInclude !== null) {
-        numbers.push(mustInclude);
-      }
 
       while (numbers.length < amount) {
         const num = Math.floor(Math.random() * 100);
@@ -114,24 +118,69 @@
       return shuffle(numbers);
     }
 
+    function generateRandomLayout(numbers) {
+      const layout = [];
+
+      numbers.forEach(num => {
+        const size = Math.floor(Math.random() * 26) + 42;
+        const fontSize = Math.floor(size / 2.4);
+
+        const x = Math.random() * (100 - 18);
+        const y = Math.random() * (100 - 14);
+
+        layout.push({
+          number: num,
+          width: size,
+          height: size,
+          fontSize: fontSize,
+          left: x,
+          top: y,
+          rotate: Math.floor(Math.random() * 41) - 20
+        });
+      });
+
+      return layout;
+    }
+
+    function createBoard(boardElement, isGameBoard = false) {
+      boardElement.innerHTML = "";
+
+      numberLayout.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "number";
+        btn.textContent = item.number;
+
+        btn.style.width = item.width + "px";
+        btn.style.height = item.height + "px";
+        btn.style.fontSize = item.fontSize + "px";
+        btn.style.left = item.left + "%";
+        btn.style.top = item.top + "%";
+        btn.style.transform = `rotate(${item.rotate}deg)`;
+
+        btn.onclick = () => {
+          if (!isGameBoard) {
+            selectedNumber = item.number;
+            startGame();
+          } else {
+            if (item.number === selectedNumber) {
+              message.innerHTML = '<div class="found">המספר נמצא ✅</div>';
+              nextBtn.classList.remove("hidden");
+            } else {
+              btn.classList.add("wrong");
+              setTimeout(() => btn.classList.remove("wrong"), 400);
+            }
+          }
+        };
+
+        boardElement.appendChild(btn);
+      });
+    }
+
     function createChooseBoard() {
       selectedNumber = null;
       currentNumbers = generateNumbers(25);
-
-      chooseBoard.innerHTML = "";
-
-      currentNumbers.forEach(num => {
-        const btn = document.createElement("button");
-        btn.className = "number";
-        btn.textContent = num;
-
-        btn.onclick = () => {
-          selectedNumber = num;
-          startGame();
-        };
-
-        chooseBoard.appendChild(btn);
-      });
+      numberLayout = generateRandomLayout(currentNumbers);
+      createBoard(chooseBoard, false);
     }
 
     function startGame() {
@@ -141,26 +190,7 @@
       message.innerHTML = "";
       nextBtn.classList.add("hidden");
 
-      currentNumbers = generateNumbers(25, selectedNumber);
-      gameBoard.innerHTML = "";
-
-      currentNumbers.forEach(num => {
-        const btn = document.createElement("button");
-        btn.className = "number";
-        btn.textContent = num;
-
-        btn.onclick = () => {
-          if (num === selectedNumber) {
-            message.innerHTML = '<div class="found">המספר נמצא ✅</div>';
-            nextBtn.classList.remove("hidden");
-          } else {
-            btn.classList.add("wrong");
-            setTimeout(() => btn.classList.remove("wrong"), 400);
-          }
-        };
-
-        gameBoard.appendChild(btn);
-      });
+      createBoard(gameBoard, true);
     }
 
     nextBtn.onclick = () => {
