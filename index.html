@@ -1,8 +1,128 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>משחק המספרים</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111827;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      color: #38bdf8;
+    }
+
+    .board {
+  position: relative;
+  width: min(90vw, 900px);
+  height: min(70vh, 600px);
+  margin: 25px auto 0;
+  border-radius: 18px;
+  background: #0f172a;
+  overflow: hidden;
+  border: 2px solid #1e293b;
+}
+
+    button.number {
+      position: absolute;
+      border: none;
+      border-radius: 10px;
+      background: #1f2937;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.15s;
+    }
+
+    button.number:active {
+      transform: scale(0.9);
+    }
+
+    .main-btn {
+      margin-top: 25px;
+      padding: 15px 25px;
+      font-size: 20px;
+      border: none;
+      border-radius: 14px;
+      background: #22c55e;
+      color: white;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .found {
+      color: #22c55e;
+      font-size: 28px;
+      margin-top: 25px;
+      font-weight: bold;
+    }
+
+    .wrong {
+      background: #ef4444 !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="chooseScreen">
+    <h1>בחר מספר 🔢</h1>
+    <p>שחקן 1 בוחר מספר כששחקן 2 לא מסתכל 👀</p>
+    <div id="chooseBoard" class="board"></div>
+  </div>
+
+  <div id="gameScreen" class="hidden">
+    <h1>מצא את המספר 🎯</h1>
+    <p>שחקן 1 אומר בקול את המספר שבחר</p>
+    <div id="gameBoard" class="board"></div>
+    <div id="message"></div>
+    <button id="nextBtn" class="main-btn hidden">המשך ללוח הבא</button>
+  </div>
+
+  <script>
+    let selectedNumber = null;
+    let currentNumbers = [];
+    let numberLayout = [];
+
+    const chooseScreen = document.getElementById("chooseScreen");
+    const gameScreen = document.getElementById("gameScreen");
+    const chooseBoard = document.getElementById("chooseBoard");
+    const gameBoard = document.getElementById("gameBoard");
+    const message = document.getElementById("message");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function generateNumbers(amount = 25) {
+      const numbers = [];
+
+      while (numbers.length < amount) {
+        const num = Math.floor(Math.random() * 100);
+        if (!numbers.includes(num)) {
+          numbers.push(num);
+        }
+      }
+
+      return shuffle(numbers);
+    }
+
 function generateRandomLayout(numbers) {
   const layout = [];
-  const boardWidth = 430;
-  const boardHeight = 520;
-  const gap = 8;
+  const board = chooseBoard;
+  const boardWidth = board.clientWidth;
+  const boardHeight = board.clientHeight;
+  const gap = 10;
 
   numbers.forEach(num => {
     let placed = false;
@@ -11,7 +131,7 @@ function generateRandomLayout(numbers) {
     while (!placed && attempts < 1000) {
       attempts++;
 
-      const size = Math.floor(Math.random() * 24) + 42;
+      const size = Math.floor(Math.random() * 28) + 44;
       const fontSize = Math.floor(size / 2.4);
 
       const x = Math.random() * (boardWidth - size);
@@ -21,7 +141,7 @@ function generateRandomLayout(numbers) {
         number: num,
         width: size,
         height: size,
-        fontSize: fontSize,
+        fontSize,
         leftPx: x,
         topPx: y,
         rotate: Math.floor(Math.random() * 31) - 15
@@ -45,3 +165,66 @@ function generateRandomLayout(numbers) {
 
   return layout;
 }
+
+    function createBoard(boardElement, isGameBoard = false) {
+      boardElement.innerHTML = "";
+
+      numberLayout.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "number";
+        btn.textContent = item.number;
+
+        btn.style.width = item.width + "px";
+        btn.style.height = item.height + "px";
+        btn.style.fontSize = item.fontSize + "px";
+        btn.style.left = item.left + "%";
+        btn.style.top = item.top + "%";
+        btn.style.transform = `rotate(${item.rotate}deg)`;
+
+        btn.onclick = () => {
+          if (!isGameBoard) {
+            selectedNumber = item.number;
+            startGame();
+          } else {
+            if (item.number === selectedNumber) {
+              message.innerHTML = '<div class="found">המספר נמצא ✅</div>';
+              nextBtn.classList.remove("hidden");
+            } else {
+              btn.classList.add("wrong");
+              setTimeout(() => btn.classList.remove("wrong"), 400);
+            }
+          }
+        };
+
+        boardElement.appendChild(btn);
+      });
+    }
+
+    function createChooseBoard() {
+      selectedNumber = null;
+      currentNumbers = generateNumbers(25);
+      numberLayout = generateRandomLayout(currentNumbers);
+      createBoard(chooseBoard, false);
+    }
+
+    function startGame() {
+      chooseScreen.classList.add("hidden");
+      gameScreen.classList.remove("hidden");
+
+      message.innerHTML = "";
+      nextBtn.classList.add("hidden");
+
+      createBoard(gameBoard, true);
+    }
+
+    nextBtn.onclick = () => {
+      gameScreen.classList.add("hidden");
+      chooseScreen.classList.remove("hidden");
+      createChooseBoard();
+    };
+
+    createChooseBoard();
+  </script>
+
+</body>
+</html>
