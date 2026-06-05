@@ -122,7 +122,7 @@
       const boardWidth = chooseBoard.clientWidth;
       const boardHeight = chooseBoard.clientHeight;
 
-      const cols = 5;
+      const cols = 10;
       const rows = 5;
 
       const cellW = boardWidth / cols;
@@ -193,7 +193,7 @@
 
     function createChooseBoard() {
       selectedNumber = null;
-      currentNumbers = generateNumbers(25);
+      currentNumbers = generateNumbers(50);
       numberLayout = generateRandomLayout(currentNumbers);
       createBoard(chooseBoard, false);
     }
