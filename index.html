@@ -20,15 +20,15 @@
     }
 
     .board {
-  position: relative;
-  width: min(90vw, 900px);
-  height: min(70vh, 600px);
-  margin: 25px auto 0;
-  border-radius: 18px;
-  background: #0f172a;
-  overflow: hidden;
-  border: 2px solid #1e293b;
-}
+      position: relative;
+      width: min(90vw, 900px);
+      height: min(70vh, 600px);
+      margin: 25px auto 0;
+      border-radius: 18px;
+      background: #0f172a;
+      overflow: hidden;
+      border: 2px solid #1e293b;
+    }
 
     button.number {
       position: absolute;
@@ -101,7 +101,7 @@
     const nextBtn = document.getElementById("nextBtn");
 
     function shuffle(array) {
-      return array.sort(() => Math.random() - 0.5);
+      return [...array].sort(() => Math.random() - 0.5);
     }
 
     function generateNumbers(amount = 25) {
@@ -117,54 +117,45 @@
       return shuffle(numbers);
     }
 
-function generateRandomLayout(numbers) {
-  const layout = [];
-  const board = chooseBoard;
-  const boardWidth = board.clientWidth;
-  const boardHeight = board.clientHeight;
-  const gap = 10;
+    function generateRandomLayout(numbers) {
+      const layout = [];
+      const boardWidth = chooseBoard.clientWidth;
+      const boardHeight = chooseBoard.clientHeight;
 
-  numbers.forEach(num => {
-    let placed = false;
-    let attempts = 0;
+      const cols = 5;
+      const rows = 5;
 
-    while (!placed && attempts < 1000) {
-      attempts++;
+      const cellW = boardWidth / cols;
+      const cellH = boardHeight / rows;
 
-      const size = Math.floor(Math.random() * 28) + 44;
-      const fontSize = Math.floor(size / 2.4);
+      shuffle(numbers).forEach((num, index) => {
+        const col = index % cols;
+        const row = Math.floor(index / cols);
 
-      const x = Math.random() * (boardWidth - size);
-      const y = Math.random() * (boardHeight - size);
+        const minSize = Math.min(cellW, cellH) * 0.35;
+        const maxSize = Math.min(cellW, cellH) * 0.58;
+        const size = Math.floor(Math.random() * (maxSize - minSize) + minSize);
 
-      const newItem = {
-        number: num,
-        width: size,
-        height: size,
-        fontSize,
-        leftPx: x,
-        topPx: y,
-        rotate: Math.floor(Math.random() * 31) - 15
-      };
+        const padding = 8;
+        const maxX = cellW - size - padding;
+        const maxY = cellH - size - padding;
 
-      const isOverlapping = layout.some(item => {
-        return !(
-          newItem.leftPx + newItem.width + gap < item.leftPx ||
-          newItem.leftPx > item.leftPx + item.width + gap ||
-          newItem.topPx + newItem.height + gap < item.topPx ||
-          newItem.topPx > item.topPx + item.height + gap
-        );
+        const x = col * cellW + padding / 2 + Math.random() * Math.max(0, maxX);
+        const y = row * cellH + padding / 2 + Math.random() * Math.max(0, maxY);
+
+        layout.push({
+          number: num,
+          width: size,
+          height: size,
+          fontSize: Math.floor(size * 0.42),
+          leftPx: x,
+          topPx: y,
+          rotate: Math.floor(Math.random() * 25) - 12
+        });
       });
 
-      if (!isOverlapping) {
-        layout.push(newItem);
-        placed = true;
-      }
+      return layout;
     }
-  });
-
-  return layout;
-}
 
     function createBoard(boardElement, isGameBoard = false) {
       boardElement.innerHTML = "";
@@ -177,8 +168,8 @@ function generateRandomLayout(numbers) {
         btn.style.width = item.width + "px";
         btn.style.height = item.height + "px";
         btn.style.fontSize = item.fontSize + "px";
-        btn.style.left = item.left + "%";
-        btn.style.top = item.top + "%";
+        btn.style.left = item.leftPx + "px";
+        btn.style.top = item.topPx + "px";
         btn.style.transform = `rotate(${item.rotate}deg)`;
 
         btn.onclick = () => {
@@ -223,7 +214,7 @@ function generateRandomLayout(numbers) {
       createChooseBoard();
     };
 
-    createChooseBoard();
+    window.addEventListener("load", createChooseBoard);
   </script>
 
 </body>
