@@ -70,6 +70,18 @@
     .wrong {
       background: #ef4444 !important;
     }
+    .flash-green {
+  animation: greenFlash 0.7s ease;
+}
+
+@keyframes greenFlash {
+  0% {
+    background: #22c55e;
+  }
+  100% {
+    background: #111827;
+  }
+}
   </style>
 </head>
 <body>
@@ -99,7 +111,8 @@
     const gameBoard = document.getElementById("gameBoard");
     const message = document.getElementById("message");
     const nextBtn = document.getElementById("nextBtn");
-
+    const chooseScreen = document.getElementById("chooseScreen");
+    
     function shuffle(array) {
       return [...array].sort(() => Math.random() - 0.5);
     }
@@ -178,8 +191,18 @@
             startGame();
           } else {
             if (item.number === selectedNumber) {
-              message.innerHTML = '<div class="found">המספר נמצא ✅</div>';
-              nextBtn.classList.remove("hidden");
+  message.innerHTML = '<div class="found">המספר נמצא ✅</div>';
+  nextBtn.classList.remove("hidden");
+
+  document.body.classList.add("flash-green");
+
+  successSound.currentTime = 0;
+  successSound.play();
+
+  setTimeout(() => {
+    document.body.classList.remove("flash-green");
+  }, 700);
+}
             } else {
               btn.classList.add("wrong");
               setTimeout(() => btn.classList.remove("wrong"), 400);
