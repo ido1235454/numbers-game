@@ -76,13 +76,13 @@
 <body>
 
   <div id="chooseScreen">
-    <h1>בחר מספר 🔢</h1>
+    <h1>בחר מספר </h1>
     <p>שחקן 1 בוחר מספר כששחקן 2 לא מסתכל 👀</p>
     <div id="chooseBoard" class="board"></div>
   </div>
 
   <div id="gameScreen" class="hidden">
-    <h1>מצא את המספר 🎯</h1>
+    <h1>מצא את המספר </h1>
     <p>שחקן 1 אומר בקול את המספר שבחר</p>
     <div id="gameBoard" class="board"></div>
     <div id="message"></div>
@@ -163,7 +163,7 @@
             startGame();
           } else {
             if (item.number === selectedNumber) {
-              message.innerHTML = '<div class="found">המספר נמצא ✅</div>';
+              message.innerHTML = '<div class="found">המספר נמצא</div>';
               nextBtn.classList.remove("hidden");
             } else {
               btn.classList.add("wrong");
