@@ -185,30 +185,29 @@ const successSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep
         btn.style.top = item.topPx + "px";
         btn.style.transform = `rotate(${item.rotate}deg)`;
 
-        btn.onclick = () => {
-          if (!isGameBoard) {
-            selectedNumber = item.number;
-            startGame();
-          } else {
-            if (item.number === selectedNumber) {
-  message.innerHTML = '<div class="found">המספר נמצא ✅</div>';
-  nextBtn.classList.remove("hidden");
+btn.onclick = () => {
+  if (!isGameBoard) {
+    selectedNumber = item.number;
+    startGame();
+  } else {
+    if (item.number === selectedNumber) {
+      message.innerHTML = '<div class="found">המספר נמצא ✅</div>';
+      nextBtn.classList.remove("hidden");
 
-  document.body.classList.add("flash-green");
+      document.body.classList.add("flash-green");
 
-  successSound.currentTime = 0;
-  successSound.play();
+      successSound.currentTime = 0;
+      successSound.play();
 
-  setTimeout(() => {
-    document.body.classList.remove("flash-green");
-  }, 700);
-}
-            } else {
-              btn.classList.add("wrong");
-              setTimeout(() => btn.classList.remove("wrong"), 400);
-            }
-          }
-        };
+      setTimeout(() => {
+        document.body.classList.remove("flash-green");
+      }, 700);
+    } else {
+      btn.classList.add("wrong");
+      setTimeout(() => btn.classList.remove("wrong"), 400);
+    }
+  }
+};
 
         boardElement.appendChild(btn);
       });
