@@ -105,13 +105,13 @@
     let currentNumbers = [];
     let numberLayout = [];
 
-    const chooseScreen = document.getElementById("chooseScreen");
-    const gameScreen = document.getElementById("gameScreen");
-    const chooseBoard = document.getElementById("chooseBoard");
-    const gameBoard = document.getElementById("gameBoard");
-    const message = document.getElementById("message");
-    const nextBtn = document.getElementById("nextBtn");
-    const chooseScreen = document.getElementById("chooseScreen");
+const chooseScreen = document.getElementById("chooseScreen");
+const gameScreen = document.getElementById("gameScreen");
+const chooseBoard = document.getElementById("chooseBoard");
+const gameBoard = document.getElementById("gameBoard");
+const message = document.getElementById("message");
+const nextBtn = document.getElementById("nextBtn");
+const successSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
     
     function shuffle(array) {
       return [...array].sort(() => Math.random() - 0.5);
@@ -136,7 +136,7 @@
       const boardHeight = chooseBoard.clientHeight;
 
       const cols = 10;
-      const rows = 5;
+      const rows = 10;
 
       const cellW = boardWidth / cols;
       const cellH = boardHeight / rows;
