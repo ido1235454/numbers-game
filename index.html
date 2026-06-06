@@ -70,6 +70,22 @@
     .wrong {
       background: #ef4444 !important;
     }
+
+    #timerBox {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  background: #1f2937;
+  color: #22c55e;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 999;
+  border: 2px solid #22c55e;
+}
+    
     .flash-green {
   animation: greenFlash 0.7s ease;
 }
@@ -86,6 +102,8 @@
 </head>
 <body>
 
+  <div id="timerBox">00:00.00</div>
+  
   <div id="chooseScreen">
     <h1>בחר מספר 🔢</h1>
     <p>שחקן 1 בוחר מספר כששחקן 2 לא מסתכל 👀</p>
@@ -111,6 +129,12 @@ const chooseBoard = document.getElementById("chooseBoard");
 const gameBoard = document.getElementById("gameBoard");
 const message = document.getElementById("message");
 const nextBtn = document.getElementById("nextBtn");
+const timerBox = document.getElementById("timerBox");
+
+let timerInterval = null;
+let startTime = 0;
+let timerRunning = false;
+let canStartTimer = false;
 const successSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
     
     function shuffle(array) {
@@ -170,6 +194,36 @@ const successSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep
       return layout;
     }
 
+    function formatTime(ms) {
+  const minutes = Math.floor(ms / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  const centiseconds = Math.floor((ms % 1000) / 10);
+
+  return (
+    String(minutes).padStart(2, "0") + ":" +
+    String(seconds).padStart(2, "0") + "." +
+    String(centiseconds).padStart(2, "0")
+  );
+}
+
+function startTimer() {
+  if (!canStartTimer || timerRunning) return;
+
+  timerRunning = true;
+  startTime = Date.now();
+
+  timerInterval = setInterval(() => {
+    timerBox.textContent = formatTime(Date.now() - startTime);
+  }, 10);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+}
+
+timerBox.onclick = startTimer;
+    
     function createBoard(boardElement, isGameBoard = false) {
       boardElement.innerHTML = "";
 
@@ -191,6 +245,8 @@ btn.onclick = () => {
     startGame();
   } else {
     if (item.number === selectedNumber) {
+      stopTimer();
+canStartTimer = false;
       message.innerHTML = '<div class="found">המספר נמצא ✅</div>';
       nextBtn.classList.remove("hidden");
 
@@ -221,6 +277,10 @@ btn.onclick = () => {
     }
 
     function startGame() {
+      timerBox.textContent = "00:00.00";
+canStartTimer = true;
+stopTimer();
+      
       chooseScreen.classList.add("hidden");
       gameScreen.classList.remove("hidden");
 
