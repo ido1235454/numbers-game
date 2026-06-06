@@ -21,8 +21,8 @@
 
     .board {
       position: relative;
-      width: min(95vw, 1400px);
-      height: min(85vh, 900px);
+      width: min(90vw, 900px);
+      height: min(70vh, 600px);
       margin: 25px auto 0;
       border-radius: 18px;
       background: #0f172a;
@@ -136,7 +136,7 @@ const successSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep
       const boardHeight = chooseBoard.clientHeight;
 
       const cols = 10;
-      const rows = 10;
+      const rows = 8;
 
       const cellW = boardWidth / cols;
       const cellH = boardHeight / rows;
@@ -145,8 +145,8 @@ const successSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep
         const col = index % cols;
         const row = Math.floor(index / cols);
 
-        const minSize = Math.min(cellW, cellH) * 0.35;
-        const maxSize = Math.min(cellW, cellH) * 0.58;
+        const minSize = Math.min(cellW, cellH) * 0.55;
+        const maxSize = Math.min(cellW, cellH) * 0.85;
         const size = Math.floor(Math.random() * (maxSize - minSize) + minSize);
 
         const padding = 8;
@@ -215,7 +215,7 @@ btn.onclick = () => {
 
     function createChooseBoard() {
       selectedNumber = null;
-      currentNumbers = generateNumbers(100);
+      currentNumbers = generateNumbers(80);
       numberLayout = generateRandomLayout(currentNumbers);
       createBoard(chooseBoard, false);
     }
